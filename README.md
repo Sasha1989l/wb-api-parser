@@ -24,3 +24,10 @@
 
 ## Очистка таблиц
 Также предусмотрена команда для очистки таблиц от старых данных **php artisan app:clear-wb-tables**.
+
+## БД
+host: FVH2.spaceweb.ru:3308
+port: 3308
+login: kzsasha198
+password: EVT5CRQAL6#YC8rX
+
