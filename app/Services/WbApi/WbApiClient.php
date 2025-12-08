@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class WbApiClient
 {
-    private string $currentDate;
-
     private string $baseUrl;
     private string $key;
     private string $dateFrom;
@@ -18,11 +16,10 @@ class WbApiClient
 
     public function __construct()
     {
-        $this->currentDate = Carbon::now()->toDateString();
         $this->baseUrl = config('wbparser.base_url');
         $this->key = config('wbparser.key');
         $this->dateFrom = '2010-01-01';
-        $this->dateTo = $this->currentDate;
+        $this->dateTo = Carbon::tomorrow()->toDateString();
     }
 
     private function fetchPage(string $endpoint, array $params = []): array
