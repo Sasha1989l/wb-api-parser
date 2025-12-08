@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\DB;
 
 class StocksService
 {
-    public $timestamps = false;
-
     public function __construct(
         private readonly WbApiClient $client
     ) {}
