@@ -83,28 +83,4 @@ class WbApiClient
             ['endpoint' => $endpoint]
         );
     }
-
-    public function getSales(callable $callback): void
-    {
-        $this->load('sales', $callback);
-    }
-
-    public function getOrders(callable $callback): void
-    {
-        $this->load('orders', $callback);
-    }
-
-    public function getStocks(callable $callback): void
-    {
-        $this->load(
-            'stocks',
-            $callback,
-            ['dateFrom' => $this->currentDate, 'dateTo' => '']
-        );
-    }
-
-    public function getIncomes(callable $callback): void
-    {
-        $this->load('incomes', $callback);
-    }
 }

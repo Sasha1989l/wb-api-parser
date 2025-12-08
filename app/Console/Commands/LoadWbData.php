@@ -2,14 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Services\WbApi\WbServiceRegistry;
 use Illuminate\Console\Command;
-
-use App\Services\WbApi\{
-    SalesService,
-    OrdersService,
-    StocksService,
-    IncomesService
-};
 
 class LoadWbData extends Command
 {
@@ -18,39 +12,47 @@ class LoadWbData extends Command
      *
      * @var string
      */
-    protected $signature = 'app:load-wb-data';
+    protected $signature = 'app:load-wb-data {endpoints?*}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Load wb data from sales, orders, stocks, incomes';
+    protected $description = 'Load wb data from endpoints';
 
     /**
      * Execute the console command.
      */
-    public function handle(
-        SalesService $sales,
-        OrdersService $orders,
-        StocksService $stocks,
-        IncomesService $incomes
-    )
+    public function handle()
     {
-        $this->info('Loading data started...');
+        $available = WbServiceRegistry::discover();
+        $requestedEndpoints = $this->argument('endpoints');
 
-        $sales->load();
-        $this->info('Sales loaded');
+        if (empty($requestedEndpoints)) {
+            $this->info("Эндпоинты не указаны — загружаю все доступные.");
+            $requestedEndpoints = array_keys($available);
+        }
 
-        $orders->load();
-        $this->info('Orders loaded');
+        foreach ($requestedEndpoints as $endpoint) {
+            if (!isset($available[$endpoint])) {
+                $this->error("Неизвестный endpoint '{$endpoint}'. Файл сервиса отсутствует.");
+                continue;
+            }
 
-        $stocks->load();
-        $this->info('Stocks loaded');
+            $serviceClass = $available[$endpoint];
+            $service = app($serviceClass);
 
-        $incomes->load();
-        $this->info('Incomes loaded');
+            $this->info("Загружаю данные для '{$endpoint}'...");
 
-        $this->info('Completed.');
+            try {
+                $service->load();
+                $this->info("'{$endpoint}' успешно загружен.");
+            } catch (\Throwable $e) {
+                $this->error("Ошибка в '{$endpoint}': " . $e->getMessage());
+            }
+        }
+
+        return Command::SUCCESS;
     }
 }
